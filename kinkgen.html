@@ -1,151 +1,162 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8"/>
-		<title>kinkgen</title>
-		<style>
-			body {
-				background: #DDDDDD;
-				margin-top: 0;
-				margin-bottom: 0;
-				text-align: center;
-			}
-				#wrapper {
-					margin: auto;
-					font-size: 12px;
-					text-align: center;
-					font-family: Verdana, Arial, Helvetica, sans-serif;
-					background-color: #EEEEEE;
-					width: 800px;
-					padding-bottom: 48px;
-				}
-					h1 {
-						font-family: Courier, "Courier New", monospace;
-						font-weight: bold;
-						font-size: 60px;
-						width: 388px;
-						height: 102px;
-						margin: auto;
-						line-height: 0.75;
-					}
-					#kinkgen {
-						margin: auto;
-						text-align: left;
-						background-color: #fff;
-						width: 600px;
-						padding-bottom: 112px;
-					}
-						label {
-							width: 12em;
-							float: left;
-							text-align: right;
-							margin-right: 0.5em;
-						}
-						#btn {
-							font-size: 24px;
-							font-weight: bold;
-						}
-		</style>
-		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-		<script>
-			$(document).ready(function() {
-				"use strict";
-				// cached jQuery objects
-				var $charCount = $('#txtCharCount');
-				var $kinkCount = $('#txtKinkCount');
-				var $chars = $('#kinkgen select.cmbChar');
-				var $kinks = $('#kinkgen select.cmbKink');
-				var $output = $('#output');
-				// available characters and kinks
-				var chars = [ "Aimless Renegade", "Aradia Megido", "Damara Megido", "Handmaiden", "Aurthour", "Becquerel", "Biscuits", "Black King", "Black Queen", "Black soldier", "Bro Strider", "Cans", "Clover", "Clubs Deuce", "Crabdad", "Crowbar", "Dad Crocker", "Dad Egbert", "Dave Strider", "Dirk Strider", "Davesprite", "Diamonds Droog", "Die", "Doc Scratch", "Doze", "Eggs", "Equius Zahhak", "Horuss Zahhak", "Eridan Ampora", "Cronus Ampora", "Expatriate Darkleer", "Feferi Peixes", "Meenah Peixes", "Fin", "Gamzee Makara", "Kurloz Makara", "Glyb'golyb", "Grand Highblood", "Grandpa Harley", "Hearts Boxcars", "Hella Jeff", "Itchy", "Jack Noir", "Jade Harley", "Jade's dreambot", "Jake English", "Jadesprite", "John Egbert", "Jane Crocker", "Kanaya Maryam", "Porrim Maryam", "Dolorosa", "Karkat Vantas", "Kankri Vantas", "Li'l Cal", "Lord English", "Maplehoof", "Matchsticks", "Mom Lalonde", "Nannasprite", "Neophyte Redglare", "Nepeta Leijon", "Meulin Leijon", "Orphaner Dualscar", "Peregrine Mendicant", "Pounce de Leon", "Problem Sleuth", "Quarters", "Rose Lalonde", "Roxy Lalonde", "Rufio", "Rufioh Nitram", "Sawbuck", "Seagoat Dad", "Seahorse Dad", "Snowman", "Sollux Captor", "Mituna Captor", "Psiioniic", "Spades Slick", "Spidermom", "Spinneret Mindfang", "Stitch", "Sufferer", "Summoner", "Sweet Bro", "Tavros Nitram", "Terezi Pyrope", "The Empress", "Trace", "Vriska Serket", "Aranea Serket", "Wayward Vagabond", "White King", "White Queen", "White soldier", "Calliope", "Caliborn", "Li'l Seb", "Autoresponder", "Sawtooth", "Squarewave", "Brobot" ];
-				// I'm not responsible for the mental or physical effects of reading this list.
-				var kinks = [ "abduction/rescue", "absence", "abuse", "age difference", "angst", "animalistic behavior", "aphrodisiac", "asphyxiation", "bad fic", "bad sex", "bdsm", "bestiality", "blood", "body heat", "body mod", "body writing", "bodyswap", "bondage", "bromance", "bucket withdrawal", "cannibalism", "clothes fetish", "cockrings", "confession", "corsetting", "cosplay", "cross-dressing", "cybering", "dancing", "dirty talk", "double penetration", "drugs", "dub-con/non-con", "exhibitionism", "expansion", "family", "family/kids", "first time", "fluff", "foodplay", "foot fetish", "frottage", "frustration", "fuck or die", "furries", "gag", "gangbang", "group sex", "guro", "hair", "hands", "hatesex", "humiliation", "hurt/comfort", "incest", "infantilism", "inflation", "insecurity", "jealousy", "lactation", "massage", "masturbation", "messiness", "mind control", "mpreg", "mute", "necrophilia", "no kink", "oral sex", "orgasm denial", "pet play", "piercings", "pity", "power play", "public sex", "puppets", "rescue", "rimming", "role reversal", "roleplaying", "self-harm", "selfcest", "sensitivity", "sharing clothes", "shower sex", "sickness", "skullfucking", "slavery", "sleeping", "spoiling", "storytelling", "submission", "tenderness", "tentacles", "threesome", "transformation", "underage", "urination", "UST", "videotaping", "violence", "vomit", "vore", "voyeurism", "water-sex", "weight-gain", "weird troll biology", "wings" ];
-				// add characters and kinks to combo boxes
-				var length = chars.length;
-				for (var i = 0; i < length; ++i) {
-					$chars.append('<option>' + chars[i] + '</option>');
-				}
-				length = kinks.length;
-				for (var i = 0; i < length; ++i) {
-					$kinks.append('<option>' + kinks[i] + '</option>');
-				}
-				// when the character count or kink count changes...
-				$charCount.add($kinkCount).change(function() {
-					// add or remove the necessary combo boxes
-					var $select = this.id === 'txtCharCount' ? $chars : $kinks;
-					var diff = this.value - $select.length;
-					if (diff > 0) {
-						for (var i = 0; i < diff; ++i) {
-							$select.last().after(function() { return this.cloneNode(true); });
-						}
-					}
-					else if (diff < 0) {
-						diff = -diff;
-						for (var i = 0; i < diff; ++i) {
-							$select.last().remove();
-						}
-					}
-					// update the cached jQuery objects to include new/exclude removed comboboxes
-					if (this.id === 'txtCharCount') {
-						$chars = $('#kinkgen select.cmbChar');
-					}
-					else {
-						$kinks = $('#kinkgen select.cmbKink');
-					}
-				});
-				// when the button is clicked...
-				$('#btn').click(function() {
-					// gets the pinned or random value from a combo box
-					function get($count, $values, values) {
-						// Fisher-Yates array shuffling algorithm from Wikipedia
-						function fisherYates(source) {
-							var a = [];
-							a[0] = source[0];
-							var l = source.length;
-							for (var i = 1; i < l; ++i) {
-								var j = Math.floor(Math.random() * (i + 1));
-								a[i] = a[j];
-								a[j] = source[i];
-							}
-							return a;
-						}
-						var ret = '';
-						var count = $count.val();
-						var shuffledValues = fisherYates(values);
-						for (var i = 0; i < count; ++i) {
-							var selectedIndex = $values.get(i).selectedIndex;
-							ret += '\t' + (selectedIndex === 0 ? shuffledValues[i] : values[selectedIndex - 1]) + '\n';
-						}
-						return ret;
-					}
-					$output.text('Characters:\n' + get($charCount, $chars, chars) + 'Kinks:\n' + get($kinkCount, $kinks, kinks));
-				});
-			});
-		</script>
-	</head>
-	<body>
-  <div id="wrapper">
-   <h1>MS<span style="font-family:Arial,sans-serif;color:#fff"> :o </span>PAINT ADVENTURES</h1>
-   <div id="kinkgen">
-    <fieldset>
-     <legend>Kink Prompt Generator</legend>
-     <label for="txtCharCount">Number of characters:</label>
-     <input type="number" id="txtCharCount" size="5" value="1" autocomplete="off"/><br/>
-     <label for="txtKinkCount">Number of kinks:</label>
-     <input type="number" id="txtKinkCount" size="5" value="1" autocomplete="off"/><br/>
-     <label for="cmbChar">Characters:</label>
-     <select class="cmbChar" required>
-      <option>-- RANDOM --</option>
-     </select><br/>
-     <label for="cmbKink">Kinks:</label>
-     <select class="cmbKink" required>
-      <option>-- RANDOM --</option>
-     </select><br/>
-     <button id="btn">Generate</button><br/>
-     <pre id="output">Your prompt will appear here...</pre>
-    </fieldset>
-   </div>
-  </div>
- </body>
-</html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>kinkgen</title>
+    <style>
+     body {
+       background: #DDDDDD;
+       margin-top: 0;
+       margin-bottom: 0;
+       text-align: center;
+     }
+     #wrapper {
+       margin: auto;
+       font-size: 12px;
+       text-align: center;
+       font-family: Verdana, Arial, Helvetica, sans-serif;
+       background-color: #EEEEEE;
+       width: 800px;
+       padding-bottom: 48px;
+     }
+     h1 {
+       font-family: Courier, "Courier New", monospace;
+       font-weight: bold;
+       font-size: 60px;
+       width: 388px;
+       height: 102px;
+       margin: auto;
+       line-height: 0.75;
+     }
+     #kinkgen {
+       margin: auto;
+       text-align: left;
+       background-color: #fff;
+       width: 600px;
+       padding-bottom: 112px;
+     }
+     label {
+       width: 12em;
+       float: left;
+       text-align: right;
+       margin-right: 0.5em;
+     }
+     #btn {
+       font-size: 24px;
+       font-weight: bold;
+     }
+    </style>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="kinkgen.js"></script>
+    <script>
+     $(document).ready(function() {
+       "use strict";
+       // cached jQuery objects
+       var $charCount = $('#txtCharCount');
+       var $kinkCount = $('#txtKinkCount');
+       var $chars = $('#kinkgen select.cmbChar');
+       var $kinks = $('#kinkgen select.cmbKink');
+       var $output = $('#output');
+       // available characters and kinks
+       var chars = [
+	 'John Egbert', 'Rose Lalonde', 'Dave Strider', 'Jade Harley',
+	 'Dad Egbert', 'Mom Lalonde', 'Bro Strider', 'Becquerel', 'Grandpa Harley',
+	 'Poppop Crocker', 'Grandma English', 'Mom Lalonde (Rose)', 'Bro Strider (Dave)', 'God Cat',
+	 'Aradia\'s lusus', 'Tinkerbull', 'Bicyclops', 'Crabdad', 'Pounce de Leon', 'Virgin Mother Grub', 'Dragonmom', 'Spidermom', 'Aurthour', 'Goatdad', 'Seahorsedad', 'Gl\'bgolyb',
+	 'The Summoner', 'The Ψiioniic/The Helmsman', 'The Sufferer/The Signless', 'The Disciple', 'The Dolorosa', 'Neophyte Redglare', 'Marquise Spinneret Mindfang', 'E%ecutor Darkleer/The Expatri8', 'The Grand Highblood', 'Orphaner Dualscar',
+	 'Wayward Vagabond/Warweary Villein/Wastelandic Vindicator/Wizardly Vassal/The Mayor', 'Peregrine Mendicant/Parcel Mistress/Prospitian Monarch', 'Aimless Renegade/Authority Regulator/Armaments Regent', 'Windswept Questant/White Queen', 'Spades Slick/Scurrilous Straggler', 'Clubs Deuce', 'Diamonds Droog', 'Hearts Boxcars',
+	 'Nannasprite/Nanna Egbert', 'Jaspersprite/Jaspers/Frigglish', 'Davesprite/Alternate Future Dave', 'Jadesprite', 'Aradiasprite', 'Tavrisprite', 'Erisolsprite', 'Fefetasprite', 'Equiusprite/Arquiusprite',
+	 'Jack Noir/Sovereign Slayer/Bec Noir/The Cancer', 'Post-Scratch Jack Noir/Jack English', 'Cherub Session Jack Noir', 'Draconian Dignitary', 'Post-Scratch Draconian Dignitary', 'Courtyard Droll', 'Post-Scratch Courtyard Droll', 'Hegemonic Brute', 'Post-Scratch Hegemonic Brute', 'Black Queen', 'Post-Scratch White Queen', 'Black King',
+	 'Itchy', 'Doze', 'Trace', 'Clover', 'Fin', 'Die', 'Crowbar', 'Snowman/Banished Quasiroyal', 'Stitch', 'Sawbuck', 'Matchsticks', 'Eggs', 'Biscuits', 'Quarters', 'Cans',
+	 'Doc Scratch', 'Lord English/Caliborn', 'The Handmaid/The Demoness', ' Her Imperious Condescension/The Condesce/Betty Crocker/B2 Queen of Derse/The Baroness',
+	 'Aradia Megido', 'Tavros Nitram', 'Sollux Captor', 'Karkat Vantas', 'Nepeta Leijon', 'Kanaya Maryam', 'Terezi Pyrope', 'Vriska Serket', 'Equius Zahhak', 'Gamzee Makara', 'Eridan Ampira', 'Feferi Peixes',
+	 'Jane Crocker', 'Roxy Lalonde', 'Dirk Strider', 'Jake English',
+	 'Damara Megido', 'Rufioh Nitram', 'Mituna Captor', 'Kankri Vantas', 'Meulin Leijon', 'Porrim Maryam', 'Latula Pyrope', 'Aranea Serket', 'Horuss Zahhak', 'Kurloz Makara', 'Cronus Ampora', 'Meenah Peixes',
+	 'Calliope', 'Caliborn',
+	 'Andrew Hussie', 'Ms. Paint', 'MSPA Reader', 'Wolf Head', 'The Gods of the Furthest Ring',
+	 'Typheus', 'Cetus', 'Hephaestus', 'Echidna', 'Hemera', 'Nyx', 'Yaldabaoth', 'Abraxas',
+	 'Squiddles', 'Skipper Plumbthroat',
+	 'Calmasis', 'Zazzerpan', 'Frigglish', 'Wizardy Herbert', 'Beatrix', 'Russet Clove', 'Slinus Marlevort/Grant Anonama',
+	 'Auto Responder/Lil\' Hal', 'Sawtooth', 'Squarewave', 'Lil\' Cal', 'Con Air Bunny Rabbit/Liv Tyler/Mr. Terry Kiser', 'Post-Scratch Bunny/Huggy Bear/Lil\' Sebastian',
+	 'Maplehoof', 'Vodka Mutini/Mutie/Dr. Meowgon Spengler', 'Serenity/Twinkly Herbert', 'Casey/Viceroy Bubbles Von Salamancer',
+	 'Colonel Sassacre', 'Fedorafreak', 'Guy Fieri', 'Violent J', 'Shaggy 2 Dope', 'Mierfa Durgas', 'Nektan Whelan',
+	 'Sweet Bro', 'Hella Jeff', 'Geromy', 'The Big Man', 'Barack Obana', 'Sweet Bro\'s Mom', 'Peaches', 'Thed Date'
+       ];
+       // I'm not responsible for the mental or physical effects of reading this list.
+       var kinks = ["abduction/rescue", "absence", "abuse", "age difference", "angst", "animalistic behavior", "aphrodisiac", "asphyxiation", "bad fic", "bad sex", "bdsm", "bestiality", "blood", "body heat", "body mod", "body writing", "bodyswap", "bondage", "bromance", "bucket withdrawal", "cannibalism", "clothes fetish", "cockrings", "confession", "corsetting", "cosplay", "cross-dressing", "cybering", "dancing", "dirty talk", "double penetration", "drugs", "dub-con/non-con", "exhibitionism", "expansion", "family", "family/kids", "first time", "fluff", "foodplay", "foot fetish", "frottage", "frustration", "fuck or die", "furries", "gag", "gangbang", "group sex", "guro", "hair", "hands", "hatesex", "humiliation", "hurt/comfort", "incest", "infantilism", "inflation", "insecurity", "jealousy", "lactation", "massage", "masturbation", "messiness", "mind control", "mpreg", "mute", "necrophilia", "no kink", "oral sex", "orgasm denial", "pet play", "piercings", "pity", "power play", "public sex", "puppets", "rescue", "rimming", "role reversal", "roleplaying", "self-harm", "selfcest", "sensitivity", "sharing clothes", "shower sex", "sickness", "skullfucking", "slavery", "sleeping", "spoiling", "storytelling", "submission", "tenderness", "tentacles", "threesome", "transformation", "underage", "urination", "UST", "videotaping", "violence", "vomit", "vore", "voyeurism", "water-sex", "weight-gain", "weird troll biology", "wings"];
 
+       // add characters and kinks to combo boxes
+       var length = chars.length;
+       for (var i = 0; i < length; ++i) {
+	 $chars.append('<option>' + chars[i] + '</option>');
+       }
+       length = kinks.length;
+       for (var i = 0; i < length; ++i) {
+	 $kinks.append('<option>' + kinks[i] + '</option>');
+       }
+
+       // when the character count or kink count changes...
+       $charCount.add($kinkCount).change(function() {
+	 // add or remove the necessary combo boxes
+	 var $select = this.id === 'txtCharCount' ? $chars : $kinks;
+	 var diff = this.value - $select.length;
+	 if (diff > 0) {
+	   $select.last().after(function() {
+	     var elems = [];
+	     for (var i = 0; i < diff; ++i) {
+	       elems[elems.length] = this.cloneNode(true);
+	     }
+	     return elems;
+	   });
+	 }
+	 else if (diff < 0) {
+	   $select.slice(diff).remove();
+	 }
+	 // update the cached jQuery objects to include new/exclude removed comboboxes
+	 if (this.id === 'txtCharCount') {
+	   $chars = $('#kinkgen select.cmbChar');
+	 }
+	 else {
+	   $kinks = $('#kinkgen select.cmbKink');
+	 }
+       });
+
+       // when the button is clicked...
+       $('#btn').click(function() {
+	 var charIndices = [], kinkIndices = [];
+	 $chars.each(function(i, elem) {
+	   charIndices[charIndices.length] = elem.selectedIndex;
+	 });
+	 $kinks.each(function(i, elem) {
+	   kinkIndices[kinkIndices.length] = elem.selectedIndex;
+	 });
+	 $output.text($.kinkgen(charIndices, kinkIndices, chars, kinks));
+       });
+     });
+    </script>
+  </head>
+  <body>
+    <div id="wrapper">
+      <h1>MS<span style="font-family:Arial,sans-serif;color:#fff"> :o </span>PAINT ADVENTURES</h1>
+      <div id="kinkgen">
+        <fieldset>
+          <legend>Kink Prompt Generator</legend>
+	  <label for="txtCharCount">Number of characters:</label>
+          <input type="number" id="txtCharCount" size="5" value="1" autocomplete="off"/><br/>
+          <label for="txtKinkCount">Number of kinks:</label>
+	  <input type="number" id="txtKinkCount" size="5" value="1" autocomplete="off"/><br/>
+	  <label for="cmbChar">Characters:</label>
+	  <select class="cmbChar" required>
+	    <option>-- RANDOM --</option>
+	  </select><br/>
+	  <label for="cmbKink">Kinks:</label>
+	  <select class="cmbKink" required>
+	    <option>-- RANDOM --</option>
+	  </select><br/>
+	  <button id="btn">Generate</button><br/>
+	  <pre id="output">Your prompt will appear here...</pre>
+        </fieldset>
+      </div>
+    </div>
+  </body>
+</html>
